@@ -1,14 +1,19 @@
 # Fluent UI v9 Examples
 
-I created this project because while I work at Microsoft, I never explored Fluent UI - recently on a personal project I decided to create a small Vite + React + TypeScript playground that showcases [Microsoft Fluent UI v9](https://react.fluentui.dev/) (`@fluentui/react-components`) with a set of custom **`BrandVariants`** themes and a live theme switcher.
+This repo is an example gallery for building React + TypeScript pages and layouts with [Microsoft Fluent UI v9](https://react.fluentui.dev/) (`@fluentui/react-components`).
 
-I created 6 distinct themes, each with a light and dark mode, to demonstrate how you can build your own branded themes with the `createLightTheme` / `createDarkTheme` utilities. The single-page app also includes a showcase of most common Fluent UI components (buttons, inputs, cards, badges, dialog, toaster, table, accordion, message bars, progress, skeleton, and more) to see how they look in each theme.
+The project is intentionally organized so each example lives in its own source file and can be browsed quickly from both the app UI and the repository.
 
 
 
 ## Features
 
-- Single-page **component showcase** covering most common Fluent UI v9 primitives — buttons, inputs, selection, cards, badges, dialog, toaster, table, accordion, message bars, progress, skeleton, and more.
+- Multi-page example gallery with separate page/layout modules.
+- Lazy-loaded example pages to reduce initial bundle size.
+- Built-in example navigation and theme controls (brand + light/dark toggle).
+- Sidebar grouping by category (Forms, Dashboards, Navigation).
+- Source-friendly UX: each example includes direct links and one-click source-path copy.
+- URL hash navigation (`#/login-page`, etc.) for easy sharing.
 - **6 distinct brand themes**, each with both a light and dark `Theme` built via `createLightTheme` / `createDarkTheme`:
   | Theme | Mood | File |
   |---|---|---|
@@ -18,7 +23,7 @@ I created 6 distinct themes, each with a light and dark mode, to demonstrate how
   | Corporate Slate | Neutral / muted | [src/themes/corporateSlateTheme.ts](src/themes/corporateSlateTheme.ts) |
   | Royal Violet | Bold / premium | [src/themes/royalVioletTheme.ts](src/themes/royalVioletTheme.ts) |
   | Midnight Aurora | Dark-first cyan-teal | [src/themes/midnightAuroraTheme.ts](src/themes/midnightAuroraTheme.ts) |
-- **Theme switcher** in the sticky header — pick a brand from the dropdown and toggle light/dark with the sun/moon button. Themes that prefer dark (e.g. Midnight Aurora) auto-switch the mode on selection via `defaultModeFor`.
+- Theme switcher in the top bar. Themes that prefer dark (e.g. Midnight Aurora) auto-switch the mode on selection via `defaultModeFor`.
 
 ## Getting started
 
@@ -43,17 +48,36 @@ Open the URL printed by Vite (default <http://localhost:5173>).
 
 ```
 src/
-  main.tsx                     # React entry, mounts <App />
-  App.tsx                      # Showcase page + theme switcher
+  main.tsx                             # React entry, mounts <App />
+  App.tsx                              # Theme state + hash page selection + app shell wiring
+  components/
+    ExamplesShell.tsx                  # Shared gallery layout (category nav + source links + copy action)
+  examples/
+    index.ts                           # Example registry and default page id
+    types.ts                           # ExampleDefinition type
+    login/
+      LoginPageExample.tsx             # Login layout example
+    dashboard/
+      DashboardCardsExample.tsx        # Dashboard card layout example
+    settings/
+      AccountSettingsExample.tsx       # Settings form layout example
   themes/
-    index.ts                   # themeRegistry + ThemeKey/Mode + defaultModeFor
-    oceanBlueTheme.ts          # BrandVariants + light/dark Theme
+    index.ts                           # themeRegistry + ThemeKey/Mode + defaultModeFor
+    oceanBlueTheme.ts                  # BrandVariants + light/dark Theme
     sunsetEmberTheme.ts
     forestSageTheme.ts
     corporateSlateTheme.ts
     royalVioletTheme.ts
     midnightAuroraTheme.ts
 ```
+
+## How navigation works
+
+The app uses hash-based navigation without adding routing dependencies.
+
+- Selecting an example updates the URL to `#/example-id`.
+- Reloading or sharing the URL opens the same example.
+- Unknown hashes fall back to the default example.
 
 ## How the theming works
 
@@ -99,6 +123,18 @@ export const App = () => (
    - Add an entry to `defaultModeFor` indicating the preferred default mode.
 
 The dropdown in [src/App.tsx](src/App.tsx) is data-driven off `themeRegistry`, so the new theme appears automatically.
+
+## Adding a new example page
+
+1. Create a new example component under `src/examples/<category>/<Name>Example.tsx`.
+2. Export/register it in [src/examples/index.ts](src/examples/index.ts) with:
+  - `id` (used for hash URL)
+  - `category` (used for sidebar grouping)
+  - `title`
+  - `summary`
+  - `component`
+  - `sourceFiles` (paths to display in the source links panel)
+3. The gallery nav and page rendering update automatically from the registry.
 
 ## Tech stack
 
